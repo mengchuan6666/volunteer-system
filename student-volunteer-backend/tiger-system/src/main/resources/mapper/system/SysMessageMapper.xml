@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiger.system.mapper.SysMessageMapper">
+    
+    <resultMap type="SysMessage" id="SysMessageResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="conent"    column="conent"    />
+        <result property="status"    column="status"    />
+        <result property="answer"    column="answer"    />
+        <result property="extra"    column="extra"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysMessageVo">
+        select id, user_id, conent, status, answer, extra, create_time, update_time from sys_message
+    </sql>
+
+    <select id="selectSysMessageList" parameterType="SysMessage" resultMap="SysMessageResult">
+        <include refid="selectSysMessageVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="conent != null  and conent != ''"> and conent = #{conent}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="answer != null  and answer != ''"> and answer = #{answer}</if>
+            <if test="extra != null  and extra != ''"> and extra = #{extra}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysMessageById" parameterType="Long" resultMap="SysMessageResult">
+        <include refid="selectSysMessageVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysMessage" parameterType="SysMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="conent != null and conent != ''">conent,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="answer != null and answer != ''">answer,</if>
+            <if test="extra != null">extra,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="conent != null and conent != ''">#{conent},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="answer != null and answer != ''">#{answer},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysMessage" parameterType="SysMessage">
+        update sys_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="conent != null and conent != ''">conent = #{conent},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="answer != null and answer != ''">answer = #{answer},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysMessageById" parameterType="Long">
+        delete from sys_message where id = #{id}
+    </delete>
+
+    <delete id="deleteSysMessageByIds" parameterType="String">
+        delete from sys_message where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

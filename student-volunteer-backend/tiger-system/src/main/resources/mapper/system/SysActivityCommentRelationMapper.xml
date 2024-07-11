@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiger.system.mapper.SysActivityCommentRelationMapper">
+    
+    <resultMap type="SysActivityCommentRelation" id="SysActivityCommentRelationResult">
+        <result property="id"    column="id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="commentId"    column="comment_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="volunteerId"    column="volunteer_id"    />
+        <result property="extra"    column="extra"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysActivityCommentRelationVo">
+        select id, activity_id, comment_id, user_id, volunteer_id, extra, create_time, update_time from sys_activity_comment_relation
+    </sql>
+
+    <select id="selectSysActivityCommentRelationList" parameterType="SysActivityCommentRelation" resultMap="SysActivityCommentRelationResult">
+        <include refid="selectSysActivityCommentRelationVo"/>
+        <where>  
+            <if test="activityId != null "> and activity_id = #{activityId}</if>
+            <if test="commentId != null "> and comment_id = #{commentId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="volunteerId != null "> and volunteer_id = #{volunteerId}</if>
+            <if test="extra != null  and extra != ''"> and extra = #{extra}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysActivityCommentRelationById" parameterType="Long" resultMap="SysActivityCommentRelationResult">
+        <include refid="selectSysActivityCommentRelationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysActivityCommentRelation" parameterType="SysActivityCommentRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_activity_comment_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">activity_id,</if>
+            <if test="commentId != null">comment_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="volunteerId != null">volunteer_id,</if>
+            <if test="extra != null">extra,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">#{activityId},</if>
+            <if test="commentId != null">#{commentId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="volunteerId != null">#{volunteerId},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysActivityCommentRelation" parameterType="SysActivityCommentRelation">
+        update sys_activity_comment_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="commentId != null">comment_id = #{commentId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="volunteerId != null">volunteer_id = #{volunteerId},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysActivityCommentRelationById" parameterType="Long">
+        delete from sys_activity_comment_relation where id = #{id}
+    </delete>
+
+    <delete id="deleteSysActivityCommentRelationByIds" parameterType="String">
+        delete from sys_activity_comment_relation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

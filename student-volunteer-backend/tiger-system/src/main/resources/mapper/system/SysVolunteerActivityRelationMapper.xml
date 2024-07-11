@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiger.system.mapper.SysVolunteerActivityRelationMapper">
+    
+    <resultMap type="SysVolunteerActivityRelation" id="SysVolunteerActivityRelationResult">
+        <result property="id"    column="id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="volunteerId"    column="volunteer_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="extra"    column="extra"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysVolunteerActivityRelationVo">
+        select id, activity_id, volunteer_id,`status` user_id, extra, create_time, update_time from sys_volunteer_activity_relation
+    </sql>
+
+    <select id="selectSysVolunteerActivityRelationList" parameterType="SysVolunteerActivityRelation" resultType="com.tiger.system.domain.vo.SysActivityRelationDto">
+        select sa.id as activity_id,
+               sa.name as activityName,
+               sa.`describe`,
+               sa.location,
+               sa.start_time,
+               sa.end_time,
+               sa.organizer,
+               sa.status as activityStatus,
+               sa.contacts,
+               sa.contacts_phone,
+               sa.substance,
+               sa.ask,
+               sa.imgs,
+               sa.activity_type,
+               sa.organization_id,
+               sa.number_limit,
+               sa.attend_people_count,
+               svar.user_id,
+               sv.id as volunteerId,
+               sv.name as volunteerName,
+               sv.sex,
+               sv.status as volunteerStatus,
+               sv.register_time as registerTime,
+               svar.id as relationId,
+               IFNULL(svar.status ,0) as userApprovalStatus
+        from sys_activity sa left join
+            (select * from sys_volunteer_activity_relation  <if test="userId != null ">
+                where user_id=#{userId}
+            </if>) svar
+                on sa.id=svar.activity_id
+        left join sys_volunteer sv on sv.user_id = svar.user_id
+        <if test="userId != null "> and svar.user_id = #{userId}</if>
+        <where>  
+            <if test="activityId != null "> and sa.id = #{activityId}</if>
+            <if test="volunteerId != null "> and svar.volunteer_id = #{volunteerId}</if>
+            <if test="extra != null  and extra != ''"> and svar.extra = #{extra}</if>
+            <if test="status != null  and status != ''"> and svar.status = #{status}</if>
+            <if test="organizationId != null "> and sa.organization_id = #{organizationId}</if>
+            <if test="activityType != null  and activityType != ''"> and sa.activity_type = #{activityType}</if>
+            <if test="organizer != null  and organizer != ''"> and sa.organizer = #{organizer}</if>
+            <if test="activityName != null  and activityName != ''"> and sa.name = #{activityName}</if>
+        </where>
+        <if test="userId != null  and userId != ''">
+            group by sa.id
+        </if>
+    </select>
+    
+    <select id="selectSysVolunteerActivityRelationById" parameterType="Long" resultType="com.tiger.system.domain.vo.SysActivityRelationDto">
+        select sa.id as activity_id,
+               sa.name as activityName,
+               sa.`describe`,
+               sa.location,
+               sa.start_time,
+               sa.end_time,
+               sa.organizer,
+               sa.status as activityStatus,
+               sa.contacts,
+               sa.contacts_phone,
+               sa.substance,
+               sa.ask,
+               sa.imgs,
+               sa.activity_type,
+               sa.organization_id,
+               sa.number_limit,
+               sa.attend_people_count,
+               svar.user_id,
+               sv.id as volunteerId,
+               sv.name as volunteerName,
+               sv.sex,
+               sv.status as volunteerStatus,
+               sv.register_time as registerTime,
+               svar.id as relationId,
+               svar.status as userApprovalStatus
+        from sys_activity sa left join sys_volunteer_activity_relation svar on sa.id=svar.activity_id
+                             left join sys_volunteer sv on sv.user_id = svar.user_id
+        where svar.id = #{id} group by svar.id
+    </select>
+        
+    <insert id="insertSysVolunteerActivityRelation" parameterType="SysVolunteerActivityRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_volunteer_activity_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">activity_id,</if>
+            <if test="volunteerId != null">volunteer_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="extra != null">extra,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">#{activityId},</if>
+            <if test="volunteerId != null">#{volunteerId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysVolunteerActivityRelation" parameterType="SysVolunteerActivityRelation">
+        update sys_volunteer_activity_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="volunteerId != null">volunteer_id = #{volunteerId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysVolunteerActivityRelationById" parameterType="Long">
+        delete from sys_volunteer_activity_relation where id = #{id}
+    </delete>
+
+    <delete id="deleteSysVolunteerActivityRelationByIds" parameterType="String">
+        delete from sys_volunteer_activity_relation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
